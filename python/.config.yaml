@@ -1,6 +1,5 @@
 log:
   file: str
-  level: INFO
 mysql:
   host: str
   port: 11

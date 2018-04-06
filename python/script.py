@@ -13,7 +13,7 @@ from os import getcwd
 SCHEMA = {
     'log': {
         'file': str,
-        'level': str,
+        'level': 'INFO', # default value
         },
     'mysql': {
         'host': str,
@@ -38,19 +38,21 @@ def config_parser(configfile, schema):
                 typ = value
                 if key not in config_sub.keys():
                     raise KeyError('the key "%s" is absent' % full_key)
+            else:
+                if key not in config_sub.keys():
+                    config_sub[key] = value
 
             if isinstance(config_sub[key], typ):
-                if typ == dict:
-                    config_check(config_sub[key], value, '%s' % full_key)
+                if typ is dict:
+                    config_sub[key] = config_check(config_sub[key], value, '%s' % full_key)
             else:
                 raise TypeError('the key "%s" must be %s' % (full_key, typ))
-        return True
+        return config_sub
 
     with open(configfile) as conf_file:
         conf = load(conf_file.read())
 
-    if config_check(conf, schema):
-        return conf
+    return config_check(conf, schema)
 
 
 def argument_parser():
