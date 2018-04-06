@@ -119,7 +119,6 @@ def main():
         )
     try:
         logging.info('starting')
-        logging.debug('test')
         # do something here
     except Exception:
         logging.critical('script failed')
