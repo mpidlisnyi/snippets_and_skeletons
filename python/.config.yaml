@@ -3,7 +3,7 @@ log:
   level: INFO
 mysql:
   host: str
-  port: int
+  port: 11
   user: str
   passwd: str
   db: str

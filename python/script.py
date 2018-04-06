@@ -33,12 +33,12 @@ def config_parser(configfile, schema):
         '''
         for key, value in schema_sub.iteritems():
             full_key = '.'.join([path, key])
-            if key not in config_sub.keys():
-                raise KeyError('the key "%s" is absent' % full_key)
-
             typ = type(value)
-            if typ == type:
+            if typ is type:
                 typ = value
+                if key not in config_sub.keys():
+                    raise KeyError('the key "%s" is absent' % full_key)
+
             if isinstance(config_sub[key], typ):
                 if typ == dict:
                     config_check(config_sub[key], value, '%s' % full_key)
