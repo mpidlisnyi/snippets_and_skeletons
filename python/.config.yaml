@@ -1,0 +1,9 @@
+log:
+  file: str
+  level: INFO
+mysql:
+  host: str
+  port: int
+  user: str
+  passwd: str
+  db: str

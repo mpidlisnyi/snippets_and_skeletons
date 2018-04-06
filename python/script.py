@@ -11,28 +11,31 @@ from os import getcwd
 
 
 SCHEMA = {
-        'log': {
-            'file': str,
-            'level': str,
-            },
-        'mysql': {
-            'host': str,
-            'port': int,
-            'user': str,
-            'passwd': str,
-            'db': str,
-            },
-        }
+    'log': {
+        'file': str,
+        'level': str,
+        },
+    'mysql': {
+        'host': str,
+        'port': int,
+        'user': str,
+        'passwd': str,
+        'db': str,
+        },
+    }
 
 
 def config_parser(configfile, schema):
     ''' Configuration parser
     '''
     def config_check(config_sub, schema_sub, path=''):
+        ''' Validate configuration file with the schema
+        '''
         for key, value in schema_sub.iteritems():
             full_key = '.'.join([path, key])
             if key not in config_sub.keys():
                 raise KeyError('the key "%s" is absent' % full_key)
+
             typ = type(value)
             if typ == type:
                 typ = value
@@ -42,6 +45,7 @@ def config_parser(configfile, schema):
             else:
                 raise TypeError('the key "%s" must be %s' % (full_key, typ))
         return True
+
     with open(configfile) as conf_file:
         conf = load(conf_file.read())
 
@@ -81,6 +85,8 @@ def argument_parser():
 
 
 def logging_init(logfile, loglevel, prefix):
+    ''' Init logging subsystem
+    '''
     if loglevel and loglevel in ['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']:
         level = getattr(logging, loglevel)
     else:
@@ -89,12 +95,14 @@ def logging_init(logfile, loglevel, prefix):
         logging.basicConfig(
             filename=logfile,
             format='[%(asctime)s] ' + prefix + ' %(levelname)s: %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S %z',
             level=level
             )
     else:
         logging.basicConfig(
             filename=logfile,
             format='%(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S %z',
             level=level
             )
 
