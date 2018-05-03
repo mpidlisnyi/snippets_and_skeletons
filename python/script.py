@@ -8,12 +8,13 @@ import traceback
 from yaml import load
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from os import getcwd
+from logging.handlers import RotatingFileHandler
 
 
 SCHEMA = {
     'log': {
         'file': str,
-        'level': 'INFO', # default value
+        'level': 'INFO',
         },
     'mysql': {
         'host': str,
@@ -44,7 +45,11 @@ def config_parser(configfile, schema):
 
             if isinstance(config_sub[key], typ):
                 if typ is dict:
-                    config_sub[key] = config_check(config_sub[key], value, '%s' % full_key)
+                    config_sub[key] = config_check(
+                        config_sub[key],
+                        value,
+                        '%s' % full_key
+                        )
             else:
                 raise TypeError('the key "%s" must be %s' % (full_key, typ))
         return config_sub
@@ -86,7 +91,7 @@ def argument_parser():
     return parser.parse_args()
 
 
-def logging_init(logfile, loglevel, prefix):
+def logging_init(logfile, loglevel, maxBytes=10485760, backupCount=10):
     ''' Init logging subsystem
     '''
     if loglevel and loglevel in ['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']:
@@ -94,17 +99,27 @@ def logging_init(logfile, loglevel, prefix):
     else:
         level = getattr(logging, 'CRITICAL')
     if logfile:
+        handler = RotatingFileHandler(
+            logfile,
+            maxBytes=maxBytes,
+            backupCount=backupCount
+            )
         logging.basicConfig(
-            filename=logfile,
-            format='[%(asctime)s] ' + prefix + ' %(levelname)s: %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S %z',
+            level=level
+            )
+        formatter = logging.Formatter(
+            '[%(asctime)s] %(levelname)s: %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S %Z'
+            )
+        handler.setFormatter(formatter)
+        logging.root.handlers = [handler]
+        logging.basicConfig(
             level=level
             )
     else:
         logging.basicConfig(
-            filename=logfile,
             format='%(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S %z',
+            datefmt='%Y-%m-%d %H:%M:%S %Z',
             level=level
             )
 
@@ -125,6 +140,7 @@ def main():
         logging.critical(traceback.format_exc())
     else:
         logging.info('successful done')
+
 
 if __name__ == '__main__':
     main()
