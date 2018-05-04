@@ -14,10 +14,11 @@ def main():
         long_description='mypackage',
         install_requires=ins_req,
         include_package_data=True,
-        entry_points='''
-            [console_scripts]
-            mypackage=mypackage.script:main
-        ''',
+        entry_points={
+            'console_scripts': [
+                'mypackage=mypackage.manager:main',
+                ],
+        }
     )
 
 
