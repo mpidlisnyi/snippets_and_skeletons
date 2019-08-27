@@ -1,10 +1,12 @@
 #!/bin/env python3
-#
-# Simple command line script with args parsing, configuration file validation
-# and logging
-#
+
+'''
+Simple commandline script with args, configuration file validation and logging
+'''
+
 import logging
 import traceback
+import sys
 from yaml import load
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from os import getcwd
@@ -65,6 +67,7 @@ def argument_parser():
     '''
 
     parser = ArgumentParser(
+        description=sys.modules[__name__].__doc__,
         conflict_handler='resolve',
         formatter_class=ArgumentDefaultsHelpFormatter,
     )
