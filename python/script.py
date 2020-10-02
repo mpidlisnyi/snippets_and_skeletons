@@ -7,7 +7,7 @@ Simple commandline script with args, configuration file validation and logging
 import logging
 import traceback
 import sys
-from yaml import load
+from yaml import load, SafeLoader
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from os import getcwd
 from logging.handlers import RotatingFileHandler
@@ -57,7 +57,7 @@ def config_parser(configfile, schema):
         return config_sub
 
     with open(configfile) as conf_file:
-        conf = load(conf_file.read())
+        conf = load(conf_file.read(), Loader=SafeLoader)
 
     return config_check(conf, schema)
 
@@ -132,8 +132,7 @@ def main():
     config = config_parser(args.config, SCHEMA)
     logging_init(
         config['log']['file'],
-        config['log']['level'],
-        args.environment
+        config['log']['level']
         )
     try:
         logging.info('starting')
