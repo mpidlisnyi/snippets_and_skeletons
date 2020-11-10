@@ -11,20 +11,30 @@ from yaml import load, SafeLoader
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from os import getcwd
 from logging.handlers import RotatingFileHandler
+from pymysql import connect
 
 
 SCHEMA = {
     'log': {
-        'file': str,
+        'file': 'stdout',
         'level': 'INFO',
         },
     'mysql': {
-        'host': str,
-        'port': int,
-        'user': str,
-        'passwd': str,
-        'db': str,
-        },
+        'source': {
+            'host': str,
+            'port': 3306,
+            'user': str,
+            'passwd': str,
+            'db': 'mysql',
+            },
+        'destination': {
+            'host': str,
+            'port': 3306,
+            'user': str,
+            'passwd': str,
+            'db': 'mysql',
+            },
+        }
     }
 
 
@@ -34,7 +44,7 @@ def config_parser(configfile, schema):
     def config_check(config_sub, schema_sub, path=''):
         ''' Validate configuration file with the schema
         '''
-        for key, value in schema_sub.iteritems():
+        for key, value in schema_sub.items():
             full_key = '.'.join([path, key])
             typ = type(value)
             if typ is type:
@@ -80,16 +90,9 @@ def argument_parser():
         default='%s/.config.yaml' % getcwd(),
     )
     parser_add(
-        '-e',
-        '--environment',
-        help='environment',
-        choices=[
-            'prod',
-            'stg',
-            'qa',
-            'dev',
-            ],
-        required=True,
+        '--dry-run',
+        help='any commits only diff',
+        action='store_true',
     )
     return parser.parse_args()
 
@@ -101,7 +104,13 @@ def logging_init(logfile, loglevel, maxBytes=10485760, backupCount=10):
         level = getattr(logging, loglevel)
     else:
         level = getattr(logging, 'CRITICAL')
-    if logfile:
+    if logfile == 'stdout':
+        logging.basicConfig(
+            format='%(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S %Z',
+            level=level
+            )
+    elif logfile:
         handler = RotatingFileHandler(
             logfile,
             maxBytes=maxBytes,
