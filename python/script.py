@@ -11,7 +11,6 @@ from yaml import load, SafeLoader
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from os import getcwd
 from logging.handlers import RotatingFileHandler
-from pymysql import connect
 
 
 SCHEMA = {
