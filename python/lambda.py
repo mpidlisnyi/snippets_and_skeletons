@@ -19,8 +19,12 @@ if loglevel and loglevel in levels:
     level = getattr(logging, loglevel)
 else:
     level = getattr(logging, 'CRITICAL')
-logging.basicConfig(level=level)
-logger = logging.getLogger()
+logging.getLogger().setLevel(level)
+
+#logging.getLogger('boto3').setLevel(logging.WARNING)
+#logging.getLogger('botocore').setLevel(logging.WARNING)
+#logging.getLogger('nose').setLevel(logging.WARNING)
+#logging.getLogger('urllib3').setLevel(logging.INFO)
 
 
 def ssm_get(path):
@@ -48,12 +52,12 @@ def send_into_slack(channel, message, color='#439FE0'):
             ],
         }
 
-    logger.debug(f'sending message "{message}" into channel {channel}')
+    logging.debug(f'sending message "{message}" into channel {channel}')
     request = Request(slack_webhook_url, data=jdumps(params).encode('gbk'))
     response = urlopen(request)
     code = response.getcode()
     if code == 200:
-        logger.debug('slack api said: %s', response.read())
+        logging.debug('slack api said: %s', response.read())
     else:
         Exception(f'slack api returns code {code}: {response.read()}')
 
