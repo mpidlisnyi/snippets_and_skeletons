@@ -96,7 +96,7 @@ def argument_parser():
     return parser.parse_args()
 
 
-def logging_init(logfile, loglevel, maxBytes=10485760, backupCount=10):
+def logging_init(logfile='stdout', loglevel='INFO', maxBytes=10485760, backupCount=10):
     ''' Init logging subsystem
     '''
     if loglevel and loglevel in ['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']:
